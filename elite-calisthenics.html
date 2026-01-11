@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protagonist Project - Elite Calisthenics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #151515;
+            --bg-tertiary: #1a1a1a;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --success: #10b981;
+            --success-dark: #059669;
+            --border: #27272a;
+            --border-light: #3f3f46;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 60px 40px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .flag-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .flag-button:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .flag-button.active {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .level-card-mini {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card-mini::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .level-card-mini:hover:not(.locked) {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.15);
+        }
+
+        .level-card-mini:hover:not(.locked)::before {
+            transform: scaleX(1);
+        }
+
+        .level-card-mini.active {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .level-card-mini.active::before {
+            transform: scaleX(1);
+        }
+
+        .level-card-mini.completed {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: var(--success);
+        }
+
+        .level-card-mini.completed::before {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+            transform: scaleX(1);
+        }
+
+        .level-card-mini.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .level-mini-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .level-mini-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .level-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .level-badge.completed {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+        }
+
+        .level-mini-progress {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .level-mini-progress-bar {
+            height: 100%;
+            background: var(--accent-gradient);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        .level-mini-progress-bar.completed {
+            background: linear-gradient(90deg, var(--success) 0%, var(--success-dark) 100%);
+        }
+
+        .level-mini-percent {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 12px;
+            text-align: right;
+        }
+
+        .level-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .level-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .level-card {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .level-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .level-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .level-quote {
+            color: var(--text-secondary);
+            font-size: clamp(1rem, 2.5vw, 1.125rem);
+            font-style: italic;
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
+
+        .level-info {
+            background: var(--bg-tertiary);
+            padding: 20px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: inline-block;
+            text-align: left;
+        }
+
+        .level-progress-section {
+            background: var(--bg-tertiary);
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .week-tracker {
+            margin-bottom: 32px;
+        }
+
+        .week-tracker-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .week-count {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .week-box {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .week-box.completed {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--success);
+        }
+
+        .week-box.active {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .week-number {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .week-check {
+            font-size: 1.5rem;
+        }
+
+        .week-box.completed .week-check {
+            color: var(--success);
+        }
+
+        .submit-day-section {
+            background: var(--bg-primary);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .submit-day-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .submit-day-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .day-counter {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .counter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .counter-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .counter-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--accent-gradient);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-button:disabled {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .submit-button.completed-today {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+        }
+
+        .progress-requirements {
+            background: rgba(255, 159, 64, 0.1);
+            border: 1px solid rgba(255, 159, 64, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .progress-requirements-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #ff9f40;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-requirements-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 40px;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-gradient);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .progress-bar.completed {
+            background: linear-gradient(90deg, var(--success) 0%, var(--success-dark) 100%);
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .level-up-button {
+            width: 100%;
+            padding: 18px 32px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .level-up-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .level-up-button:disabled {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            border: 1px solid var(--border);
+        }
+
+        .workout-section {
+            margin-bottom: 48px;
+        }
+
+        .workout-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .workout-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .frequency-badge {
+            padding: 10px 20px;
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .exercise-item {
+            padding: 20px 24px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .exercise-item:hover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .exercise-item.completed {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: var(--success);
+        }
+
+        .exercise-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        .exercise-text {
+            flex: 1;
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .exercise-item.completed .exercise-text {
+            opacity: 0.5;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .video-button {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .video-button:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .video-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .xp-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tips-section {
+            background: var(--bg-secondary);
+            padding: 40px;
+            border-radius: 24px;
+            margin-top: 60px;
+            border: 1px solid var(--border);
+        }
+
+        .tips-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .tip-item {
+            margin: 20px 0;
+            padding: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .tip-label {
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+            font-size: 1.125rem;
+        }
+
+        .tip-item div:not(.tip-label) {
+            color: var(--text-secondary);
+            margin: 8px 0;
+        }
+
+        /* Video Modal */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .video-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .video-modal-content {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid var(--border-light);
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .video-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            color: var(--text-muted);
+        }
+
+        .video-placeholder svg {
+            width: 80px;
+            height: 80px;
+            opacity: 0.3;
+        }
+
+        /* Achievement Modal */
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--bg-secondary);
+            padding: 60px 50px;
+            border-radius: 24px;
+            text-align: center;
+            z-index: 2100;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--border-light);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .achievement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .achievement-icon {
+            font-size: 5rem;
+            margin-bottom: 24px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .achievement-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .achievement-message {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .achievement-button {
+            padding: 16px 32px;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .achievement-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px 12px;
+            }
+
+            header {
+                padding: 30px 16px;
+                margin-bottom: 24px;
+            }
+
+            .language-selector {
+                top: 12px;
+                right: 12px;
+                gap: 8px;
+            }
+
+            .flag-button {
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+            }
+
+            .level-card {
+                padding: 20px 16px;
+            }
+
+            .level-progress-section {
+                padding: 20px 16px;
+            }
+
+            .submit-day-section {
+                padding: 16px;
+            }
+
+            .week-tracker {
+                margin-bottom: 20px;
+            }
+
+            .weeks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+                gap: 8px;
+            }
+
+            .floating-stats {
+                top: auto;
+                bottom: 12px;
+                right: 12px;
+                left: 12px;
+                padding: 14px;
+                min-width: unset;
+                display: flex;
+                justify-content: space-around;
+            }
+
+            .floating-stat-item {
+                margin: 0;
+                flex-direction: column;
+            }
+
+            .achievement-popup {
+                padding: 30px 20px;
+            }
+
+            .video-modal-content {
+                padding: 20px 16px;
+            }
+
+            .exercise-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .video-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .player-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .tips-section {
+                padding: 24px 16px;
+            }
+
+            .tip-item {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px 8px;
+            }
+
+            header {
+                padding: 24px 12px;
+                margin-bottom: 16px;
+            }
+
+            .language-selector {
+                top: 8px;
+                right: 8px;
+            }
+
+            .level-card {
+                padding: 16px 12px;
+                margin-bottom: 16px;
+            }
+
+            .level-progress-section {
+                padding: 16px 12px;
+            }
+
+            .submit-day-section {
+                padding: 12px;
+            }
+
+            .weeks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+                gap: 6px;
+            }
+
+            .exercise-item {
+                font-size: 0.9rem;
+                padding: 12px;
+                flex-wrap: wrap;
+            }
+
+            .exercise-actions {
+                width: 100%;
+                margin-top: 8px;
+                margin-left: 0;
+            }
+
+            .player-stats {
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .tips-section {
+                padding: 20px 12px;
+                margin-top: 40px;
+            }
+
+            .tip-item {
+                padding: 12px;
+            }
+
+            .workout-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .day-counter {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .level-selector {
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-icon">🏆</div>
+        <h2 class="achievement-title">LEVEL UP!</h2>
+        <p class="achievement-message" id="achievementMessage">You've mastered this level!</p>
+        <button class="achievement-button" onclick="closeAchievement()">Continue</button>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-content">
+            <div class="video-modal-header">
+                <h3 class="video-modal-title" id="videoModalTitle">Exercise Tutorial</h3>
+                <button class="close-button" onclick="closeVideo()">×</button>
+            </div>
+            <div class="video-container" id="videoContainer">
+                <div class="video-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <p>Video tutorial will appear here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="language-selector">
+                <button class="flag-button active" onclick="changeLanguage('en')" id="flag-en" title="English">🇺🇸</button>
+                <button class="flag-button" onclick="changeLanguage('pt')" id="flag-pt" title="Português">🇧🇷</button>
+            </div>
+            <h1 id="mainTitle">PROTAGONIST PROJECT</h1>
+            <p class="subtitle" id="mainSubtitle">Elite Calisthenics Training System</p>
+            
+            <div class="player-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Total XP</div>
+                    <div class="stat-value" id="totalXP">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Current Level</div>
+                    <div class="stat-value" id="currentLevel">1</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Completion</div>
+                    <div class="stat-value" id="totalCompletion">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label" id="todaysXPLabel">Today's XP</div>
+                    <div class="stat-value" id="todayXP">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="level-selector" id="levelSelector"></div>
+
+        <!-- LEVEL 1 -->
+        <div id="level1" class="level-content active">
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">LEVEL 1: AWAKENING</h2>
+                    <p class="level-quote">"Every protagonist starts weak, but with unlimited potential"</p>
+                    <div class="level-info">
+                        <strong>📅 Duration:</strong> Weeks 1-8<br>
+                        <strong>🎯 Objective:</strong> Build strength foundation and conditioning
+                    </div>
+                </div>
+
+                <div class="level-progress-section">
+                    <div class="week-tracker">
+                        <div class="week-tracker-title">
+                            <span id="weekProgressTitle1">Week Progress</span>
+                            <span class="week-count" id="weekCount1">0/8 weeks</span>
+                        </div>
+                        <div class="weeks-grid" id="weeksGrid1">
+                            <!-- Weeks will be generated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="submit-day-section">
+                        <div class="submit-day-header">
+                            <div class="submit-day-title" id="submitTitle1">Today's Training</div>
+                            <div class="day-counter">
+                                <div class="counter-item">
+                                    <span class="counter-label" id="thisWeekLabel1">This Week</span>
+                                    <span class="counter-value" id="thisWeekCount1">0</span>
+                                </div>
+                                <div class="counter-item">
+                                    <span class="counter-label" id="totalDaysLabel1">Total Days</span>
+                                    <span class="counter-value" id="totalDaysCount1">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="submit-button" id="submitBtn1" onclick="submitTraining(1)">
+                            <span>📝</span> <span>Submit Today's Training</span>
+                        </button>
+                    </div>
+
+                    <div class="progress-requirements" id="requirements1">
+                        <div class="progress-requirements-title">
+                            <span>⚠️</span>
+                            <span id="requirementsTitle1">Requirements to Level Up</span>
+                        </div>
+                        <div class="progress-requirements-text" id="requirementsText1">
+                            You must complete all exercises AND submit 24 training days over 8 weeks (3x per week recommended). Current: 0/24 days completed.
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress1">0%</div>
+                    </div>
+                    <div class="progress-text" id="progressText1">0/11 exercises completed</div>
+                    <button class="level-up-button" id="levelUpBtn1" onclick="levelUp(1)" disabled>
+                        🔒 Complete all exercises to level up
+                    </button>
+                </div>
+
+                <div class="workout-section">
+                    <div class="workout-header">
+                        <h3 class="workout-title">Workout A - Push</h3>
+                        <span class="frequency-badge">3x per week</span>
+                    </div>
+                    <ul class="exercise-list">
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Knee push-ups: 3x8-12</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Knee Push-ups', 'jWxvty2KROs')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Plank: 3x20-30 seconds</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Plank Hold', 'ASdvN_XEl_c')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Incline push-ups: 3x6-10</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Incline Push-ups', '4dF1DOWzf20')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Pike push-ups: 2x5-8</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Pike Push-ups', 'x4YNjHHJuJ0')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="workout-section">
+                    <div class="workout-header">
+                        <h3 class="workout-title">Workout B - Pull</h3>
+                        <span class="frequency-badge">3x per week</span>
+                    </div>
+                    <ul class="exercise-list">
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Australian rows: 3x8-12</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Australian Rows', 'hXTc1mDnZCw')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Hollow body hold: 3x15-20s</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Hollow Body Hold', 'LlDNef_Ztsc')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Towel rows: 3x8-10</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Towel Door Rows', 'rloXYB8M3vU')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="10">
+                            <span class="exercise-text">Dead hang: 3x10-15s</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Dead Hang', 'dVJQu4z8SL0')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+10 XP</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="workout-section">
+                    <div class="workout-header">
+                        <h3 class="workout-title">Daily Extras</h3>
+                    </div>
+                    <ul class="exercise-list">
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="5">
+                            <span class="exercise-text">Squats: 3x15-20</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Bodyweight Squats', 'aclHkVaku9U')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+5 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="5">
+                            <span class="exercise-text">Side plank: 2x15s each</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Side Plank', 'K2VljzCC16g')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+5 XP</span>
+                            </div>
+                        </li>
+                        <li class="exercise-item">
+                            <input type="checkbox" class="exercise-checkbox" data-level="1" data-xp="5">
+                            <span class="exercise-text">Jumping jacks: 3x20</span>
+                            <div class="exercise-actions">
+                                <button class="video-button" onclick="openVideo('Jumping Jacks', 'UpH7rm0cYbM')">
+                                    <svg class="video-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    Watch
+                                </button>
+                                <span class="xp-badge">+5 XP</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional levels would follow the same pattern -->
+        <!-- For brevity, I'm showing the structure for Level 2-5 -->
+
+        <div id="level2" class="level-content">
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">LEVEL 2: TRAINING ARC</h2>
+                    <p class="level-quote">"The protagonist masters the basics and discovers their power"</p>
+                    <div class="level-info">
+                        <strong>📅 Duration:</strong> Weeks 9-16<br>
+                        <strong>🎯 Objective:</strong> Master fundamental movements
+                    </div>
+                </div>
+                <div class="level-progress-section">
+                    <div class="week-tracker">
+                        <div class="week-tracker-title">
+                            <span id="weekProgressTitle2">Week Progress</span>
+                            <span class="week-count" id="weekCount2">0/8 weeks</span>
+                        </div>
+                        <div class="weeks-grid" id="weeksGrid2"></div>
+                    </div>
+
+                    <div class="submit-day-section">
+                        <div class="submit-day-header">
+                            <div class="submit-day-title" id="submitTitle2">Today's Training</div>
+                            <div class="day-counter">
+                                <div class="counter-item">
+                                    <span class="counter-label" id="thisWeekLabel2">This Week</span>
+                                    <span class="counter-value" id="thisWeekCount2">0</span>
+                                </div>
+                                <div class="counter-item">
+                                    <span class="counter-label" id="totalDaysLabel2">Total Days</span>
+                                    <span class="counter-value" id="totalDaysCount2">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="submit-button" id="submitBtn2" onclick="submitTraining(2)">
+                            <span>📝</span> <span>Submit Today's Training</span>
+                        </button>
+                    </div>
+
+                    <div class="progress-requirements" id="requirements2">
+                        <div class="progress-requirements-title">
+                            <span>⚠️</span>
+                            <span id="requirementsTitle2">Requirements to Level Up</span>
+                        </div>
+                        <div class="progress-requirements-text" id="requirementsText2">
+                            You must complete all exercises AND submit training days over weeks.
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress2">0%</div>
+                    </div>
+                    <div class="progress-text" id="progressText2">0/15 exercises completed</div>
+                    <button class="level-up-button" id="levelUpBtn2" onclick="levelUp(2)" disabled>
+                        🔒 Complete all exercises to level up
+                    </button>
+                </div>
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Level 2 exercises coming soon...</p>
+            </div>
+        </div>
+
+        <div id="level3" class="level-content">
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">LEVEL 3: POWER UP</h2>
+                    <p class="level-quote">"New powers manifest - explosive strength and body control"</p>
+                    <div class="level-info">
+                        <strong>📅 Duration:</strong> Weeks 17-28<br>
+                        <strong>🎯 Objective:</strong> First skills and real strength
+                    </div>
+                </div>
+                <div class="level-progress-section">
+                    <div class="week-tracker">
+                        <div class="week-tracker-title">
+                            <span id="weekProgressTitle3">Week Progress</span>
+                            <span class="week-count" id="weekCount3">0/11 weeks</span>
+                        </div>
+                        <div class="weeks-grid" id="weeksGrid3"></div>
+                    </div>
+
+                    <div class="submit-day-section">
+                        <div class="submit-day-header">
+                            <div class="submit-day-title" id="submitTitle3">Today's Training</div>
+                            <div class="day-counter">
+                                <div class="counter-item">
+                                    <span class="counter-label" id="thisWeekLabel3">This Week</span>
+                                    <span class="counter-value" id="thisWeekCount3">0</span>
+                                </div>
+                                <div class="counter-item">
+                                    <span class="counter-label" id="totalDaysLabel3">Total Days</span>
+                                    <span class="counter-value" id="totalDaysCount3">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="submit-button" id="submitBtn3" onclick="submitTraining(3)">
+                            <span>📝</span> <span>Submit Today's Training</span>
+                        </button>
+                    </div>
+
+                    <div class="progress-requirements" id="requirements3">
+                        <div class="progress-requirements-title">
+                            <span>⚠️</span>
+                            <span id="requirementsTitle3">Requirements to Level Up</span>
+                        </div>
+                        <div class="progress-requirements-text" id="requirementsText3">
+                            You must complete all exercises AND submit training days over weeks.
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress3">0%</div>
+                    </div>
+                    <div class="progress-text" id="progressText3">0/20 exercises completed</div>
+                    <button class="level-up-button" id="levelUpBtn3" onclick="levelUp(3)" disabled>
+                        🔒 Complete all exercises to level up
+                    </button>
+                </div>
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Level 3 exercises coming soon...</p>
+            </div>
+        </div>
+
+        <div id="level4" class="level-content">
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">LEVEL 4: REGIONAL TOURNAMENT</h2>
+                    <p class="level-quote">"The protagonist faces strong opponents and unlocks new techniques"</p>
+                    <div class="level-info">
+                        <strong>📅 Duration:</strong> Weeks 29-40<br>
+                        <strong>🎯 Objective:</strong> Intermediate skills and advanced strength
+                    </div>
+                </div>
+                <div class="level-progress-section">
+                    <div class="week-tracker">
+                        <div class="week-tracker-title">
+                            <span id="weekProgressTitle4">Week Progress</span>
+                            <span class="week-count" id="weekCount4">0/12 weeks</span>
+                        </div>
+                        <div class="weeks-grid" id="weeksGrid4"></div>
+                    </div>
+
+                    <div class="submit-day-section">
+                        <div class="submit-day-header">
+                            <div class="submit-day-title" id="submitTitle4">Today's Training</div>
+                            <div class="day-counter">
+                                <div class="counter-item">
+                                    <span class="counter-label" id="thisWeekLabel4">This Week</span>
+                                    <span class="counter-value" id="thisWeekCount4">0</span>
+                                </div>
+                                <div class="counter-item">
+                                    <span class="counter-label" id="totalDaysLabel4">Total Days</span>
+                                    <span class="counter-value" id="totalDaysCount4">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="submit-button" id="submitBtn4" onclick="submitTraining(4)">
+                            <span>📝</span> <span>Submit Today's Training</span>
+                        </button>
+                    </div>
+
+                    <div class="progress-requirements" id="requirements4">
+                        <div class="progress-requirements-title">
+                            <span>⚠️</span>
+                            <span id="requirementsTitle4">Requirements to Level Up</span>
+                        </div>
+                        <div class="progress-requirements-text" id="requirementsText4">
+                            You must complete all exercises AND submit training days over weeks.
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress4">0%</div>
+                    </div>
+                    <div class="progress-text" id="progressText4">0/20 exercises completed</div>
+                    <button class="level-up-button" id="levelUpBtn4" onclick="levelUp(4)" disabled>
+                        🔒 Complete all exercises to level up
+                    </button>
+                </div>
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Level 4 exercises coming soon...</p>
+            </div>
+        </div>
+
+        <div id="level5" class="level-content">
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">LEVEL 5: FINAL BOSS</h2>
+                    <p class="level-quote">"The protagonist reaches their true potential"</p>
+                    <div class="level-info">
+                        <strong>📅 Duration:</strong> Weeks 41-52<br>
+                        <strong>🎯 Objective:</strong> Advanced skills and superhuman strength
+                    </div>
+                </div>
+                <div class="level-progress-section">
+                    <div class="week-tracker">
+                        <div class="week-tracker-title">
+                            <span id="weekProgressTitle5">Week Progress</span>
+                            <span class="week-count" id="weekCount5">0/12 weeks</span>
+                        </div>
+                        <div class="weeks-grid" id="weeksGrid5"></div>
+                    </div>
+
+                    <div class="submit-day-section">
+                        <div class="submit-day-header">
+                            <div class="submit-day-title" id="submitTitle5">Today's Training</div>
+                            <div class="day-counter">
+                                <div class="counter-item">
+                                    <span class="counter-label" id="thisWeekLabel5">This Week</span>
+                                    <span class="counter-value" id="thisWeekCount5">0</span>
+                                </div>
+                                <div class="counter-item">
+                                    <span class="counter-label" id="totalDaysLabel5">Total Days</span>
+                                    <span class="counter-value" id="totalDaysCount5">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="submit-button" id="submitBtn5" onclick="submitTraining(5)">
+                            <span>📝</span> <span>Submit Today's Training</span>
+                        </button>
+                    </div>
+
+                    <div class="progress-requirements" id="requirements5">
+                        <div class="progress-requirements-title">
+                            <span>⚠️</span>
+                            <span id="requirementsTitle5">Requirements to Level Up</span>
+                        </div>
+                        <div class="progress-requirements-text" id="requirementsText5">
+                            You must complete all exercises AND submit training days over weeks.
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress5">0%</div>
+                    </div>
+                    <div class="progress-text" id="progressText5">0/20 exercises completed</div>
+                    <button class="level-up-button" id="levelUpBtn5" onclick="levelUp(5)" disabled>
+                        🔒 Complete all exercises to become legendary
+                    </button>
+                </div>
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Level 5 exercises coming soon...</p>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h3 class="tips-title">MASTER'S TIPS</h3>
+            
+            <div class="tip-item">
+                <div class="tip-label">🍖 Nutrition Arc</div>
+                <div>Calories: 200-300 surplus if you want to gain mass</div>
+                <div>Protein: 2g per kg of body weight</div>
+                <div>Sleep 8h minimum - that's when you get stronger</div>
+            </div>
+
+            <div class="tip-item">
+                <div class="tip-label">📖 Training Rule</div>
+                <div>If you can't do minimum reps, go back to previous level</div>
+                <div>If you do maximum easily for 2 weeks, advance</div>
+                <div>Failure is part of the journey</div>
+            </div>
+
+            <div class="tip-item">
+                <div class="tip-label">😴 Strategic Rest</div>
+                <div>48h between same muscle group workouts</div>
+                <div>Deload week every 6-8 weeks (reduce 40% volume)</div>
+            </div>
+
+            <div class="tip-item">
+                <div class="tip-label">🧠 Mindset</div>
+                <div>Log your workouts and track your evolution</div>
+                <div>Take photos every 4 weeks</div>
+                <div>Don't skip warm-up (5-10 min always)</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Video mapping for all exercises
+        const exerciseVideos = {
+            // Level 1 - Awakening
+            'knee push-ups': 'jWxvty2KROs',
+            'plank': 'ASdvN_XEl_c',
+            'incline push-ups': '4dF1DOWzf20',
+            'pike push-ups': 'x4YNjHHJuJ0',
+            'australian rows': 'hXTc1mDnZCw',
+            'hollow body hold': 'LlDNef_Ztsc',
+            'towel rows': 'rloXYB8M3vU',
+            'dead hang': 'dVJQu4z8SL0',
+            'squats': 'aclHkVaku9U',
+            'bodyweight squats': 'aclHkVaku9U',
+            'side plank': 'K2VljzCC16g',
+            'jumping jacks': 'UpH7rm0cYbM',
+            
+            // Level 2 - Training Arc
+            'regular push-ups': 'IODxDxX7oi4',
+            'push-ups': 'IODxDxX7oi4',
+            'diamond push-ups': 'J0DnG1_S92I',
+            'dynamic plank': 'pvIjsG5Svck',
+            'bench dips': '0326dy_-CzM',
+            'dips': '0326dy_-CzM',
+            'pull-up negatives': 'mZvr2IsNjPw',
+            'chin-up negatives': 'gC2kDPxKnZg',
+            'l-sit hold': 'IUZJoSP66HI',
+            'arch body hold': '44ScXWFaVBs',
+            'assisted pistol squat': 'qDcniqddTeE',
+            'pistol squat': 'qDcniqddTeE',
+            'bulgarian split squat': '2C-uSqMNEjA',
+            'assisted nordic curls': 'nPvsT5pP2xQ',
+            'nordic curls': 'nPvsT5pP2xQ',
+            'hanging knee raises': 'xZJx-mfaez4',
+            'hollow rocks': 'p7j02V1fIzU',
+            
+            // Level 3 - Power Up
+            'handstand': 'tQhrk6WMcKw',
+            'handstand against wall': 'tQhrk6WMcKw',
+            'elevated pike push-ups': 'spoSDRVPOu8',
+            'pseudo planche push-ups': 'od66dp0-s2U',
+            'parallel bar dips': 'yN6Q1UI_xkE',
+            'full parallel bar dips': 'yN6Q1UI_xkE',
+            'explosive push-ups': 'MaFb3fWo-jU',
+            'pull-ups': 'eGo4IYlbE5g',
+            'chin-ups': 'bGx6wPIV3vI',
+            'muscle-up negatives': '_PkNqS3TuFg',
+            'front lever tuck': 'bd32QdkVGK4',
+            'toes to bar': 'Q7DYXf7h29s',
+            'archer push-ups': 'iZXZs8yCGBQ',
+            'planche lean': 'kVj3-3RdUgk',
+            'decline push-ups': 'SKPab2YC8BE',
+            'hindu push-ups': 'kGNZlKT6QOE',
+            'l-sit on parallettes': '5eWCvLv5lmY',
+            'shrimp squat': 'y-wV4Venusw',
+            'box jumps': 'NBY9-kTuHEk',
+            'calf raises': 'BknsUp_CQYQ',
+            'single-leg calf raises': 'BknsUp_CQYQ',
+            
+            // Level 4 - Regional Tournament
+            'partial handstand push-ups': 'tQMKkC1U9fI',
+            'handstand push-ups': 'tQMKkC1U9fI',
+            'advanced pseudo planche push-ups': 'vMEPELXU6FY',
+            'weighted dips': 'dip-uxdQmUM',
+            'planche tuck': '_l11HjqPXR8',
+            'korean dips': 'wgTlVcOkLJA',
+            'weighted pull-ups': 'cNBsEg_EQvI',
+            'muscle-up': 'BKqbVg0oj-8',
+            'muscle-ups': 'BKqbVg0oj-8',
+            'front lever advanced tuck': 'UF17bTXBvAQ',
+            'one arm chin-up negatives': '1_pXeUOT4jU',
+            'dragon flag negatives': 'NNK_z1R7rss',
+            'back lever tuck': '6F3RktzZ4Cg',
+            'freestanding handstand': 'U8kJDhR0YoE',
+            'handstand free': 'U8kJDhR0YoE',
+            'clapping push-ups': 'D4Jgz0hFv4M',
+            '360 pull prep': 'qyaVh5lOlJE',
+            'v-sit': 'xI82E91c_sQ',
+            'pistol jumps': 'VJPiUq_fPe0',
+            'explosive muscle-up': 'e6j6lZzONLE',
+            'plyo push-ups': 'SiLeMdP1KPk',
+            'max height box jumps': 'NBY9-kTuHEk',
+            'burpee muscle-ups': 'W1SD96lrudY',
+            
+            // Level 5 - Final Boss
+            'full handstand push-ups': 'hdGC3Nqx2A4',
+            'advanced planche lean': 'SDrkJXlG_5A',
+            '90° push-ups': 'i_YR7lXYdNk',
+            'maltese prep': 'MgYfLBBjTnE',
+            'weighted pull-ups +20kg': 'cNBsEg_EQvI',
+            'consecutive muscle-ups': 'wC8M8VeRrWU',
+            'front lever': 'I33FCZwfwJg',
+            'assisted one arm pull-up': '1xr3D_RY7Pg',
+            'hefesto prep': '8j6_lI8ZCZE',
+            'freestanding handstand 60s+': 'U8kJDhR0YoE',
+            'full back lever': 'OhsV7NGnYFA',
+            'human flag prep': '4SJj-_zWB7k',
+            'straddle planche': 'vJg5Dz7wd88',
+            'victorian prep': 'K2KvqSCLU6w',
+            'volume push-ups': 'bt5b9x9N0KU',
+            'volume pull-ups': 'eGo4IYlbE5g',
+            'l-sit to handstand': 'h0BL-y1r-Bk',
+            'core complex': 'DHD1-2P94DI',
+            'flexibility & mobility': 'qULTwquOuT4'
+        };
+
+        function getVideoId(exerciseName) {
+            const normalized = exerciseName.toLowerCase().trim();
+            // Try exact match first
+            if (exerciseVideos[normalized]) {
+                return exerciseVideos[normalized];
+            }
+            // Try partial match
+            for (const [key, value] of Object.entries(exerciseVideos)) {
+                if (normalized.includes(key) || key.includes(normalized)) {
+                    return value;
+                }
+            }
+            // Fallback to a generic calisthenics tutorial
+            return 'IODxDxX7oi4';
+        }
+
+        // Translations
+        const translations = {
+            en: {
+                mainTitle: 'PROTAGONIST PROJECT',
+                mainSubtitle: 'Elite Calisthenics Training System',
+                totalXP: 'Total XP',
+                currentLevel: 'Current Level',
+                completion: 'Completion',
+                level1Title: 'LEVEL 1: AWAKENING',
+                level1Quote: '"Every protagonist starts weak, but with unlimited potential"',
+                level2Title: 'LEVEL 2: TRAINING ARC',
+                level2Quote: '"The protagonist masters the basics and discovers their power"',
+                level3Title: 'LEVEL 3: POWER UP',
+                level3Quote: '"New powers manifest - explosive strength and body control"',
+                level4Title: 'LEVEL 4: REGIONAL TOURNAMENT',
+                level4Quote: '"The protagonist faces strong opponents and unlocks new techniques"',
+                level5Title: 'LEVEL 5: FINAL BOSS',
+                level5Quote: '"The protagonist reaches their true potential"',
+                duration: 'Duration',
+                objective: 'Objective',
+                weeks18: 'Weeks 1-8',
+                weeks916: 'Weeks 9-16',
+                weeks1728: 'Weeks 17-28',
+                weeks2940: 'Weeks 29-40',
+                weeks4152: 'Weeks 41-52',
+                obj1: 'Build strength foundation and conditioning',
+                obj2: 'Master fundamental movements',
+                obj3: 'First skills and real strength',
+                obj4: 'Intermediate skills and advanced strength',
+                obj5: 'Advanced skills and superhuman strength',
+                exercisesCompleted: 'exercises completed',
+                completeToLevel: '🔒 Complete all exercises to level up',
+                levelCompleted: '✓ Level Completed',
+                levelUp: '⬆️ LEVEL UP',
+                becomeLegendary: '🏆 BECOME LEGENDARY',
+                workoutAPush: 'Workout A - Push',
+                workoutBPull: 'Workout B - Pull',
+                dailyExtras: 'Daily Extras',
+                perWeek: 'per week',
+                watch: 'Watch',
+                mastersTips: "MASTER'S TIPS",
+                nutritionArc: '🍖 Nutrition Arc',
+                trainingRule: '📖 Training Rule',
+                strategicRest: '😴 Strategic Rest',
+                mindset: '🧠 Mindset',
+                nutritionTip1: 'Calories: 200-300 surplus if you want to gain mass',
+                nutritionTip2: 'Protein: 2g per kg of body weight',
+                nutritionTip3: "Sleep 8h minimum - that's when you get stronger",
+                trainingTip1: "If you can't do minimum reps, go back to previous level",
+                trainingTip2: 'If you do maximum easily for 2 weeks, advance',
+                trainingTip3: 'Failure is part of the journey',
+                restTip1: '48h between same muscle group workouts',
+                restTip2: 'Deload week every 6-8 weeks (reduce 40% volume)',
+                mindsetTip1: 'Log your workouts and track your evolution',
+                mindsetTip2: 'Take photos every 4 weeks',
+                mindsetTip3: "Don't skip warm-up (5-10 min always)",
+                todaysXP: "Today's XP",
+                level: 'Level',
+                levelUpTitle: 'LEVEL UP!',
+                levelUpMessage: "You've mastered this level!",
+                continue: 'Continue',
+                exerciseTutorial: 'Exercise Tutorial',
+                levelName1: 'AWAKENING',
+                levelName2: 'TRAINING ARC',
+                levelName3: 'POWER UP',
+                levelName4: 'TOURNAMENT',
+                levelName5: 'FINAL BOSS',
+                weekProgress: 'Week Progress',
+                weekOf: 'Week',
+                currentWeek: 'Current Week',
+                submitToday: 'Submit Today\'s Training',
+                alreadySubmitted: '✓ Training Submitted Today',
+                thisWeek: 'This Week',
+                totalDays: 'Total Days',
+                requirementsTitle: '⚠️ Requirements to Level Up',
+                requirementsText: 'You must complete all exercises AND submit {required} training days over {weeks} weeks (3x per week recommended). Current: {current}/{required} days completed.',
+                cannotLevelUp: '🔒 Complete {weeks} weeks of training to unlock',
+                week: 'W'
+            },
+            pt: {
+                mainTitle: 'PROJETO PROTAGONISTA',
+                mainSubtitle: 'Sistema Elite de Treinamento de Calistenia',
+                totalXP: 'XP Total',
+                currentLevel: 'Nível Atual',
+                completion: 'Conclusão',
+                level1Title: 'NÍVEL 1: DESPERTAR',
+                level1Quote: '"Todo protagonista começa fraco, mas com potencial ilimitado"',
+                level2Title: 'NÍVEL 2: ARCO DE TREINAMENTO',
+                level2Quote: '"O protagonista domina o básico e descobre seu poder"',
+                level3Title: 'NÍVEL 3: POWER UP',
+                level3Quote: '"Novos poderes se manifestam - força explosiva e controle corporal"',
+                level4Title: 'NÍVEL 4: TORNEIO REGIONAL',
+                level4Quote: '"O protagonista enfrenta adversários fortes e desbloqueia novas técnicas"',
+                level5Title: 'NÍVEL 5: BOSS FINAL',
+                level5Quote: '"O protagonista atinge seu verdadeiro potencial"',
+                duration: 'Duração',
+                objective: 'Objetivo',
+                weeks18: 'Semanas 1-8',
+                weeks916: 'Semanas 9-16',
+                weeks1728: 'Semanas 17-28',
+                weeks2940: 'Semanas 29-40',
+                weeks4152: 'Semanas 41-52',
+                obj1: 'Construir base de força e condicionamento',
+                obj2: 'Dominar movimentos fundamentais',
+                obj3: 'Primeiras skills e força real',
+                obj4: 'Skills intermediárias e força avançada',
+                obj5: 'Skills avançadas e força sobre-humana',
+                exercisesCompleted: 'exercícios completos',
+                completeToLevel: '🔒 Complete todos os exercícios para subir de nível',
+                levelCompleted: '✓ Nível Completo',
+                levelUp: '⬆️ SUBIR DE NÍVEL',
+                becomeLegendary: '🏆 TORNAR-SE LENDÁRIO',
+                workoutAPush: 'Treino A - Empurrar',
+                workoutBPull: 'Treino B - Puxar',
+                dailyExtras: 'Extras Diários',
+                perWeek: 'por semana',
+                watch: 'Assistir',
+                mastersTips: 'DICAS DO MESTRE',
+                nutritionArc: '🍖 Nutrição Arc',
+                trainingRule: '📖 Regra do Treino',
+                strategicRest: '😴 Descanso Estratégico',
+                mindset: '🧠 Mentalidade',
+                nutritionTip1: 'Calorias: surplus de 200-300 se quer ganhar massa',
+                nutritionTip2: 'Proteína: 2g por kg de peso',
+                nutritionTip3: 'Durma 8h mínimo - é quando você fica mais forte',
+                trainingTip1: 'Se não consegue fazer o mínimo de reps, volte ao nível anterior',
+                trainingTip2: 'Se faz o máximo fácil por 2 semanas, avance',
+                trainingTip3: 'Falha é parte da jornada',
+                restTip1: '48h entre treinos do mesmo grupo muscular',
+                restTip2: 'Deload week a cada 6-8 semanas (reduz 40% volume)',
+                mindsetTip1: 'Registre seus treinos e acompanhe sua evolução',
+                mindsetTip2: 'Tire fotos a cada 4 semanas',
+                mindsetTip3: 'Não pule o aquecimento (5-10 min sempre)',
+                todaysXP: 'XP de Hoje',
+                level: 'Nível',
+                levelUpTitle: 'SUBIU DE NÍVEL!',
+                levelUpMessage: 'Você dominou este nível!',
+                continue: 'Continuar',
+                exerciseTutorial: 'Tutorial do Exercício',
+                levelName1: 'DESPERTAR',
+                levelName2: 'ARCO DE TREINO',
+                levelName3: 'POWER UP',
+                levelName4: 'TORNEIO',
+                levelName5: 'BOSS FINAL',
+                weekProgress: 'Progresso Semanal',
+                weekOf: 'Semana',
+                currentWeek: 'Semana Atual',
+                submitToday: 'Enviar Treino de Hoje',
+                alreadySubmitted: '✓ Treino Enviado Hoje',
+                thisWeek: 'Esta Semana',
+                totalDays: 'Total de Dias',
+                requirementsTitle: '⚠️ Requisitos para Subir de Nível',
+                requirementsText: 'Você deve completar todos os exercícios E enviar {required} dias de treino ao longo de {weeks} semanas (3x por semana recomendado). Atual: {current}/{required} dias completos.',
+                cannotLevelUp: '🔒 Complete {weeks} semanas de treino para desbloquear',
+                week: 'S'
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'en';
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            
+            // Update flag buttons
+            document.getElementById('flag-en').classList.toggle('active', lang === 'en');
+            document.getElementById('flag-pt').classList.toggle('active', lang === 'pt');
+            
+            // Update all translatable elements
+            const t = translations[lang];
+            
+            // Header
+            document.getElementById('mainTitle').textContent = t.mainTitle;
+            document.getElementById('mainSubtitle').textContent = t.mainSubtitle;
+            
+            // Stats labels
+            document.querySelectorAll('.stat-label')[0].textContent = t.totalXP;
+            document.querySelectorAll('.stat-label')[1].textContent = t.currentLevel;
+            document.querySelectorAll('.stat-label')[2].textContent = t.completion;
+            document.getElementById('todaysXPLabel').textContent = t.todaysXP;
+            
+            // Level titles and info
+            const levelData = [
+                { title: t.level1Title, quote: t.level1Quote, weeks: t.weeks18, obj: t.obj1 },
+                { title: t.level2Title, quote: t.level2Quote, weeks: t.weeks916, obj: t.obj2 },
+                { title: t.level3Title, quote: t.level3Quote, weeks: t.weeks1728, obj: t.obj3 },
+                { title: t.level4Title, quote: t.level4Quote, weeks: t.weeks2940, obj: t.obj4 },
+                { title: t.level5Title, quote: t.level5Quote, weeks: t.weeks4152, obj: t.obj5 }
+            ];
+            
+            levelData.forEach((data, index) => {
+                const levelId = index + 1;
+                const levelCard = document.querySelector(`#level${levelId} .level-title`);
+                const levelQuote = document.querySelector(`#level${levelId} .level-quote`);
+                const levelInfo = document.querySelector(`#level${levelId} .level-info`);
+                
+                if (levelCard) levelCard.textContent = data.title;
+                if (levelQuote) levelQuote.textContent = data.quote;
+                if (levelInfo) {
+                    levelInfo.innerHTML = `<strong>📅 ${t.duration}:</strong> ${data.weeks}<br><strong>🎯 ${t.objective}:</strong> ${data.obj}`;
+                }
+            });
+            
+            // Workout titles
+            const workoutTitles = document.querySelectorAll('.workout-title');
+            if (workoutTitles[0]) workoutTitles[0].textContent = t.workoutAPush;
+            if (workoutTitles[1]) workoutTitles[1].textContent = t.workoutBPull;
+            if (workoutTitles[2]) workoutTitles[2].textContent = t.dailyExtras;
+            
+            // Frequency badges
+            document.querySelectorAll('.frequency-badge').forEach(badge => {
+                const number = badge.textContent.match(/\d+/)[0];
+                badge.textContent = `${number}x ${t.perWeek}`;
+            });
+            
+            // Watch buttons
+            document.querySelectorAll('.video-button').forEach(btn => {
+                const svg = btn.querySelector('svg');
+                btn.innerHTML = '';
+                btn.appendChild(svg);
+                btn.appendChild(document.createTextNode(t.watch));
+            });
+            
+            // Tips section
+            document.querySelector('.tips-title').textContent = t.mastersTips;
+            const tipLabels = document.querySelectorAll('.tip-label');
+            if (tipLabels[0]) tipLabels[0].textContent = t.nutritionArc;
+            if (tipLabels[1]) tipLabels[1].textContent = t.trainingRule;
+            if (tipLabels[2]) tipLabels[2].textContent = t.strategicRest;
+            if (tipLabels[3]) tipLabels[3].textContent = t.mindset;
+            
+            const tipItems = document.querySelectorAll('.tip-item');
+            if (tipItems[0]) {
+                const divs = tipItems[0].querySelectorAll('div:not(.tip-label)');
+                if (divs[0]) divs[0].textContent = t.nutritionTip1;
+                if (divs[1]) divs[1].textContent = t.nutritionTip2;
+                if (divs[2]) divs[2].textContent = t.nutritionTip3;
+            }
+            if (tipItems[1]) {
+                const divs = tipItems[1].querySelectorAll('div:not(.tip-label)');
+                if (divs[0]) divs[0].textContent = t.trainingTip1;
+                if (divs[1]) divs[1].textContent = t.trainingTip2;
+                if (divs[2]) divs[2].textContent = t.trainingTip3;
+            }
+            if (tipItems[2]) {
+                const divs = tipItems[2].querySelectorAll('div:not(.tip-label)');
+                if (divs[0]) divs[0].textContent = t.restTip1;
+                if (divs[1]) divs[1].textContent = t.restTip2;
+            }
+            if (tipItems[3]) {
+                const divs = tipItems[3].querySelectorAll('div:not(.tip-label)');
+                if (divs[0]) divs[0].textContent = t.mindsetTip1;
+                if (divs[1]) divs[1].textContent = t.mindsetTip2;
+                if (divs[2]) divs[2].textContent = t.mindsetTip3;
+            }
+            
+            // Update level selector
+            generateLevelSelector();
+            
+            // Update progress texts and buttons
+            for (let i = 1; i <= 5; i++) {
+                updateLevelProgress(i);
+            }
+        }
+
+        const levels = [
+            { id: 1, name: 'AWAKENING', totalExercises: 11, unlocked: true, requiredDays: 24, weeks: 8 },
+            { id: 2, name: 'TRAINING ARC', totalExercises: 15, unlocked: false, requiredDays: 24, weeks: 8 },
+            { id: 3, name: 'POWER UP', totalExercises: 20, unlocked: false, requiredDays: 33, weeks: 11 },
+            { id: 4, name: 'TOURNAMENT', totalExercises: 20, unlocked: false, requiredDays: 36, weeks: 12 },
+            { id: 5, name: 'FINAL BOSS', totalExercises: 20, unlocked: false, requiredDays: 36, weeks: 12 }
+        ];
+
+        let currentLevelId = 1;
+        let totalXP = parseInt(localStorage.getItem('totalXP')) || 0;
+        let todayXP = parseInt(localStorage.getItem('todayXP')) || 0;
+        let lastDate = localStorage.getItem('lastDate') || new Date().toDateString();
+        let unlockedLevels = JSON.parse(localStorage.getItem('unlockedLevels')) || [1];
+        let completedLevels = JSON.parse(localStorage.getItem('completedLevels')) || [];
+        
+        // Training submission tracking
+        let trainingSubmissions = JSON.parse(localStorage.getItem('trainingSubmissions')) || {};
+        let lastSubmissionDate = localStorage.getItem('lastSubmissionDate') || null;
+
+        // Initialize training submissions for each level
+        levels.forEach(level => {
+            if (!trainingSubmissions[`level${level.id}`]) {
+                trainingSubmissions[`level${level.id}`] = {
+                    submissions: [],
+                    totalDays: 0,
+                    weeklySubmissions: {}
+                };
+            }
+        });
+
+        if (lastDate !== new Date().toDateString()) {
+            todayXP = 0;
+            localStorage.setItem('todayXP', '0');
+            localStorage.setItem('lastDate', new Date().toDateString());
+        }
+
+        levels.forEach(level => {
+            level.unlocked = unlockedLevels.includes(level.id);
+            level.completed = completedLevels.includes(level.id);
+        });
+
+        function submitTraining(levelId) {
+            const today = new Date().toDateString();
+            const t = translations[currentLanguage];
+            
+            // Check if already submitted today
+            if (lastSubmissionDate === today) {
+                return;
+            }
+            
+            const levelData = trainingSubmissions[`level${levelId}`];
+            
+            // Add today's submission
+            levelData.submissions.push(today);
+            levelData.totalDays++;
+            
+            // Calculate week number (starting from first submission)
+            const firstSubmission = new Date(levelData.submissions[0]);
+            const currentSubmission = new Date(today);
+            const weekNumber = Math.floor((currentSubmission - firstSubmission) / (7 * 24 * 60 * 60 * 1000)) + 1;
+            
+            // Track weekly submissions
+            if (!levelData.weeklySubmissions[weekNumber]) {
+                levelData.weeklySubmissions[weekNumber] = 0;
+            }
+            levelData.weeklySubmissions[weekNumber]++;
+            
+            // Save to localStorage
+            lastSubmissionDate = today;
+            localStorage.setItem('lastSubmissionDate', lastSubmissionDate);
+            localStorage.setItem('trainingSubmissions', JSON.stringify(trainingSubmissions));
+            
+            // Update UI
+            updateSubmitButton(levelId);
+            updateWeekTracker(levelId);
+            updateLevelProgress(levelId);
+        }
+
+        function updateSubmitButton(levelId) {
+            const button = document.getElementById(`submitBtn${levelId}`);
+            const thisWeekCount = document.getElementById(`thisWeekCount${levelId}`);
+            const totalDaysCount = document.getElementById(`totalDaysCount${levelId}`);
+            const t = translations[currentLanguage];
+            
+            if (!button) return;
+            
+            const today = new Date().toDateString();
+            const levelData = trainingSubmissions[`level${levelId}`];
+            const isSubmittedToday = lastSubmissionDate === today;
+            
+            // Update counters
+            if (totalDaysCount) {
+                totalDaysCount.textContent = levelData.totalDays;
+            }
+            
+            // Calculate this week's submissions
+            if (thisWeekCount && levelData.submissions.length > 0) {
+                const firstSubmission = new Date(levelData.submissions[0]);
+                const currentDate = new Date();
+                const weekNumber = Math.floor((currentDate - firstSubmission) / (7 * 24 * 60 * 60 * 1000)) + 1;
+                thisWeekCount.textContent = levelData.weeklySubmissions[weekNumber] || 0;
+            }
+            
+            // Update button state
+            if (isSubmittedToday) {
+                button.disabled = true;
+                button.classList.add('completed-today');
+                button.innerHTML = `<span>✓</span> ${t.alreadySubmitted}`;
+            } else {
+                button.disabled = false;
+                button.classList.remove('completed-today');
+                button.innerHTML = `<span>📝</span> ${t.submitToday}`;
+            }
+        }
+
+        function updateWeekTracker(levelId) {
+            const level = levels.find(l => l.id === levelId);
+            const levelData = trainingSubmissions[`level${levelId}`];
+            const t = translations[currentLanguage];
+            
+            if (levelData.submissions.length === 0) return;
+            
+            const firstSubmission = new Date(levelData.submissions[0]);
+            const currentDate = new Date();
+            const currentWeek = Math.floor((currentDate - firstSubmission) / (7 * 24 * 60 * 60 * 1000)) + 1;
+            
+            // Update week boxes
+            for (let week = 1; week <= level.weeks; week++) {
+                const weekBox = document.getElementById(`week${levelId}-${week}`);
+                if (weekBox) {
+                    const submissions = levelData.weeklySubmissions[week] || 0;
+                    const checkmark = weekBox.querySelector('.week-check');
+                    
+                    if (week < currentWeek && submissions >= 3) {
+                        weekBox.classList.add('completed');
+                        if (checkmark) checkmark.textContent = '✓';
+                    } else if (week === currentWeek) {
+                        weekBox.classList.add('active');
+                        if (checkmark) checkmark.textContent = submissions;
+                    } else {
+                        weekBox.classList.remove('completed', 'active');
+                        if (checkmark) checkmark.textContent = submissions || '−';
+                    }
+                }
+            }
+        }
+
+        function canLevelUp(levelId) {
+            const checkboxes = document.querySelectorAll(`#level${levelId} .exercise-checkbox`);
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            const level = levels.find(l => l.id === levelId);
+            const levelData = trainingSubmissions[`level${levelId}`];
+            const hasEnoughDays = levelData.totalDays >= level.requiredDays;
+            
+            return allChecked && hasEnoughDays;
+        }
+
+        function openVideo(exerciseName, videoId = null) {
+            const modal = document.getElementById('videoModal');
+            const title = document.getElementById('videoModalTitle');
+            const container = document.getElementById('videoContainer');
+            
+            // If no videoId provided, look it up from the exercise name
+            if (!videoId) {
+                videoId = getVideoId(exerciseName);
+            }
+            
+            title.textContent = exerciseName;
+            container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            modal.classList.add('show');
+        }
+
+        function closeVideo() {
+            const modal = document.getElementById('videoModal');
+            const container = document.getElementById('videoContainer');
+            
+            modal.classList.remove('show');
+            container.innerHTML = `
+                <div class="video-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <p>Video tutorial will appear here</p>
+                </div>
+            `;
+        }
+
+        function generateLevelSelector() {
+            const selector = document.getElementById('levelSelector');
+            selector.innerHTML = '';
+            const t = translations[currentLanguage];
+            
+            levels.forEach(level => {
+                const card = document.createElement('div');
+                card.className = 'level-card-mini';
+                if (level.id === currentLevelId) card.classList.add('active');
+                if (level.completed) card.classList.add('completed');
+                if (!level.unlocked) card.classList.add('locked');
+                
+                const progress = getLevelProgress(level.id);
+                const levelName = t[`levelName${level.id}`];
+                
+                card.innerHTML = `
+                    <div class="level-mini-header">
+                        <div class="level-mini-title">${levelName}</div>
+                        <div class="level-badge ${level.completed ? 'completed' : ''}">${level.completed ? '✓' : level.unlocked ? level.id : '🔒'}</div>
+                    </div>
+                    <div class="level-mini-progress">
+                        <div class="level-mini-progress-bar ${level.completed ? 'completed' : ''}" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="level-mini-percent">${Math.round(progress)}%</div>
+                `;
+                
+                if (level.unlocked) {
+                    card.onclick = () => showLevel(level.id);
+                }
+                
+                selector.appendChild(card);
+            });
+        }
+
+        function getLevelProgress(levelId) {
+            const checkboxes = document.querySelectorAll(`#level${levelId} .exercise-checkbox`);
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            return checkboxes.length > 0 ? (checked / checkboxes.length) * 100 : 0;
+        }
+
+        function generateWeekTracker(levelId) {
+            const level = levels.find(l => l.id === levelId);
+            const grid = document.getElementById(`weeksGrid${levelId}`);
+            const t = translations[currentLanguage];
+            
+            if (!grid || !level) return;
+            
+            grid.innerHTML = '';
+            
+            // Use flag emojis based on language
+            const weekLabel = currentLanguage === 'pt' ? '🇧🇷' : '🇺🇸';
+            
+            for (let week = 1; week <= level.weeks; week++) {
+                const weekBox = document.createElement('div');
+                weekBox.className = 'week-box';
+                weekBox.id = `week${levelId}-${week}`;
+                weekBox.innerHTML = `
+                    <div class="week-number">${weekLabel}${week}</div>
+                    <div class="week-check">−</div>
+                `;
+                grid.appendChild(weekBox);
+            }
+            
+            // Update week count
+            const weekCount = document.getElementById(`weekCount${levelId}`);
+            if (weekCount) {
+                const levelData = trainingSubmissions[`level${levelId}`];
+                const completedWeeks = Object.keys(levelData.weeklySubmissions).filter(
+                    week => levelData.weeklySubmissions[week] >= 3
+                ).length;
+                weekCount.textContent = `${completedWeeks}/${level.weeks} ${t.weekProgress.toLowerCase()}`;
+            }
+        }
+
+        function showLevel(levelId) {
+            if (!levels.find(l => l.id === levelId).unlocked) return;
+            
+            currentLevelId = levelId;
+            document.querySelectorAll('.level-content').forEach(l => l.classList.remove('active'));
+            document.getElementById('level' + levelId).classList.add('active');
+            generateLevelSelector();
+            updateLevelProgress(levelId);
+            generateWeekTracker(levelId);
+            updateWeekTracker(levelId);
+            updateSubmitButton(levelId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateLevelProgress(levelId) {
+            const checkboxes = document.querySelectorAll(`#level${levelId} .exercise-checkbox`);
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const total = checkboxes.length;
+            const percentage = total > 0 ? (checked / total) * 100 : 0;
+            const t = translations[currentLanguage];
+            
+            const level = levels.find(l => l.id === levelId);
+            const levelData = trainingSubmissions[`level${levelId}`];
+            
+            const progressBar = document.getElementById('progress' + levelId);
+            const progressText = document.getElementById('progressText' + levelId);
+            const levelUpBtn = document.getElementById('levelUpBtn' + levelId);
+            const requirementsText = document.getElementById('requirementsText' + levelId);
+            
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = Math.round(percentage) + '%';
+                if (percentage === 100) progressBar.classList.add('completed');
+            }
+            
+            if (progressText) {
+                progressText.textContent = `${checked}/${total} ${t.exercisesCompleted}`;
+            }
+
+            // Update requirements text
+            if (requirementsText && level) {
+                const reqText = t.requirementsText
+                    .replace('{required}', level.requiredDays)
+                    .replace('{weeks}', level.weeks)
+                    .replace('{current}', levelData.totalDays);
+                requirementsText.textContent = reqText;
+            }
+            
+            if (levelUpBtn) {
+                const meetsRequirements = canLevelUp(levelId);
+                const allExercisesChecked = percentage === 100;
+                const hasEnoughDays = levelData.totalDays >= level.requiredDays;
+                
+                if (meetsRequirements && !completedLevels.includes(levelId)) {
+                    levelUpBtn.disabled = false;
+                    levelUpBtn.innerHTML = levelId === 5 ? t.becomeLegendary : t.levelUp;
+                } else if (completedLevels.includes(levelId)) {
+                    levelUpBtn.disabled = true;
+                    levelUpBtn.innerHTML = t.levelCompleted;
+                } else if (!hasEnoughDays) {
+                    levelUpBtn.disabled = true;
+                    const daysLeft = level.requiredDays - levelData.totalDays;
+                    levelUpBtn.innerHTML = t.cannotLevelUp.replace('{weeks}', level.weeks) + ` (${daysLeft} days left)`;
+                } else {
+                    levelUpBtn.disabled = true;
+                    levelUpBtn.innerHTML = t.completeToLevel;
+                }
+            }
+            
+            updateStats();
+            generateLevelSelector();
+            updateSubmitButton(levelId);
+            updateWeekTracker(levelId);
+        }
+
+        function updateStats() {
+            document.getElementById('totalXP').textContent = totalXP;
+            document.getElementById('currentLevel').textContent = Math.max(...unlockedLevels);
+            document.getElementById('todayXP').textContent = todayXP;
+            
+            let totalChecked = 0;
+            let totalExercises = 0;
+            
+            levels.forEach(level => {
+                if (level.unlocked) {
+                    const checkboxes = document.querySelectorAll(`#level${level.id} .exercise-checkbox`);
+                    totalChecked += Array.from(checkboxes).filter(cb => cb.checked).length;
+                    totalExercises += checkboxes.length;
+                }
+            });
+            
+            const totalCompletion = totalExercises > 0 ? Math.round((totalChecked / totalExercises) * 100) : 0;
+            document.getElementById('totalCompletion').textContent = totalCompletion + '%';
+        }
+
+        function levelUp(levelId) {
+            const nextLevelId = levelId + 1;
+            
+            if (!completedLevels.includes(levelId)) {
+                completedLevels.push(levelId);
+                localStorage.setItem('completedLevels', JSON.stringify(completedLevels));
+            }
+            
+            if (nextLevelId <= 5 && !unlockedLevels.includes(nextLevelId)) {
+                unlockedLevels.push(nextLevelId);
+                localStorage.setItem('unlockedLevels', JSON.stringify(unlockedLevels));
+                levels.find(l => l.id === nextLevelId).unlocked = true;
+            }
+            
+            const message = nextLevelId <= 5 ? 
+                `You've mastered Level ${levelId}! Level ${nextLevelId} unlocked!` : 
+                `Congratulations! You've become a LEGEND!`;
+            showAchievement(message);
+            
+            updateLevelProgress(levelId);
+            generateLevelSelector();
+            
+            if (nextLevelId <= 5) {
+                setTimeout(() => showLevel(nextLevelId), 2000);
+            }
+        }
+
+        function showAchievement(message) {
+            const popup = document.getElementById('achievementPopup');
+            const overlay = document.getElementById('overlay');
+            const messageEl = document.getElementById('achievementMessage');
+            const titleEl = popup.querySelector('.achievement-title');
+            const buttonEl = popup.querySelector('.achievement-button');
+            const t = translations[currentLanguage];
+            
+            titleEl.textContent = t.levelUpTitle;
+            messageEl.textContent = message;
+            buttonEl.textContent = t.continue;
+            popup.classList.add('show');
+            overlay.classList.add('show');
+        }
+
+        function closeAchievement() {
+            document.getElementById('achievementPopup').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reset submission if new day
+            const today = new Date().toDateString();
+            if (lastSubmissionDate && lastSubmissionDate !== today) {
+                // Don't reset lastSubmissionDate, just update button states
+            }
+            
+            generateLevelSelector();
+            
+            const checkboxes = document.querySelectorAll('.exercise-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const levelId = parseInt(this.dataset.level);
+                    const xp = parseInt(this.dataset.xp);
+                    const parent = this.closest('.exercise-item');
+                    
+                    if (this.checked) {
+                        parent.classList.add('completed');
+                        totalXP += xp;
+                        todayXP += xp;
+                    } else {
+                        parent.classList.remove('completed');
+                        totalXP -= xp;
+                        todayXP -= xp;
+                    }
+                    
+                    localStorage.setItem('totalXP', totalXP.toString());
+                    localStorage.setItem('todayXP', todayXP.toString());
+                    
+                    updateLevelProgress(levelId);
+                    saveProgress();
+                });
+            });
+            
+            loadProgress();
+            
+            // Initialize all levels
+            for (let i = 1; i <= 5; i++) {
+                generateWeekTracker(i);
+                updateWeekTracker(i);
+                updateSubmitButton(i);
+                updateLevelProgress(i);
+            }
+            
+            // Initialize language
+            changeLanguage(currentLanguage);
+        });
+
+        function saveProgress() {
+            const progress = {};
+            for (let i = 1; i <= 5; i++) {
+                const checkboxes = document.querySelectorAll(`#level${i} .exercise-checkbox`);
+                progress[`level${i}`] = Array.from(checkboxes).map(cb => cb.checked);
+            }
+            localStorage.setItem('progress', JSON.stringify(progress));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('progress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                for (let i = 1; i <= 5; i++) {
+                    const checkboxes = document.querySelectorAll(`#level${i} .exercise-checkbox`);
+                    const savedProgress = progress[`level${i}`];
+                    if (savedProgress) {
+                        savedProgress.forEach((checked, index) => {
+                            if (checkboxes[index]) {
+                                checkboxes[index].checked = checked;
+                                if (checked) {
+                                    checkboxes[index].closest('.exercise-item').classList.add('completed');
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVideo();
+        });
+
+        document.getElementById('overlay').addEventListener('click', closeAchievement);
+    </script>
+</body>
+</html>
